@@ -1,0 +1,72 @@
+
+> alfred-api@0.7.0 test
+> node --test tests/*.test.js
+
+TAP version 13
+# Subtest: Reserva calcula em centavos e abate estoque
+ok 1 - Reserva calcula em centavos e abate estoque
+  ---
+  duration_ms: 1.006055
+  type: 'test'
+  ...
+# Subtest: Impede estoque negativo com conflito 409
+ok 2 - Impede estoque negativo com conflito 409
+  ---
+  duration_ms: 0.61995
+  type: 'test'
+  ...
+# Subtest: Cancelamento devolve estoque uma vez
+ok 3 - Cancelamento devolve estoque uma vez
+  ---
+  duration_ms: 0.697527
+  type: 'test'
+  ...
+# Subtest: Impede cancelamento por outro usuário
+ok 4 - Impede cancelamento por outro usuário
+  ---
+  duration_ms: 0.209207
+  type: 'test'
+  ...
+# Subtest: Validação proíbe zero e mais de seis ingressos
+ok 5 - Validação proíbe zero e mais de seis ingressos
+  ---
+  duration_ms: 1.13578
+  type: 'test'
+  ...
+# Subtest: Ranking combina gêneros e artistas até 100 pontos
+ok 6 - Ranking combina gêneros e artistas até 100 pontos
+  ---
+  duration_ms: 1.483618
+  type: 'test'
+  ...
+# Subtest: Sem preferências não inventa compatibilidade
+ok 7 - Sem preferências não inventa compatibilidade
+  ---
+  duration_ms: 0.136076
+  type: 'test'
+  ...
+# Subtest: Estratégias seguem a mesma interface (LSP) e são extensíveis (OCP)
+ok 8 - Estratégias seguem a mesma interface (LSP) e são extensíveis (OCP)
+  ---
+  duration_ms: 0.134274
+  type: 'test'
+  ...
+# Subtest: Estratégias incorretas são rejeitadas
+ok 9 - Estratégias incorretas são rejeitadas
+  ---
+  duration_ms: 0.648602
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 61.667558
+
+> alfred-api@0.7.0 check
+> node --check app.js && node --check routes/admin.js && node --check routes/profile.js && node --check services/orderService.js
+

@@ -1,0 +1,25 @@
+const router=require('express').Router();
+const {Op,fn,col}=require('sequelize');
+const {Event,Venue,TicketLot,User,Favorite}=require('../models');
+const optionalAuth=require('../middlewares/optionalAuth');
+const asyncHandler=require('../middlewares/asyncHandler');
+const {createRecommendationService}=require('../services/recommendationService');
+const recommendations=createRecommendationService();
+const split=v=>String(v||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,20);
+router.get('/recommendations',optionalAuth,asyncHandler(async(req,res)=>{
+ const user=req.user?await User.findByPk(req.user.id):null;
+ const genres=Object.hasOwn(req.query,'genres')?split(req.query.genres):(user?.musicGenres||[]);
+ const artists=Object.hasOwn(req.query,'artists')?split(req.query.artists):(user?.musicArtists||[]);
+ const interests=Object.hasOwn(req.query,'interests')?split(req.query.interests):(user?.interests||[]);
+ const city=String(req.query.city||user?.preferredCity||'').slice(0,90);
+ const events=await Event.findAll({where:{isPublished:true,startAt:{[Op.gte]:new Date()}},include:[{model:Venue,as:'venue'},{model:TicketLot,as:'lots'}],limit:150,order:[['startAt','ASC']]});
+ const ids=events.map(e=>e.id);
+ const counts=ids.length?await Favorite.findAll({attributes:['eventId',[fn('COUNT',col('Favorite.id')),'count']],where:{eventId:{[Op.in]:ids}},group:['event_id'],raw:true}):[];
+ const countMap=new Map(counts.map(c=>[Number(c.eventId),Number(c.count)]));
+ const withPopularity=events.map(e=>({...e.get({plain:true}),favoriteCount:countMap.get(e.id)||0}));
+ const saved=user?await Favorite.findAll({where:{userId:user.id},include:[{model:Event,as:'event',attributes:['category']}]}):[];
+ const likedCategories=[...new Set(saved.map(f=>f.event?.category).filter(Boolean))];
+ const ranked=recommendations.rank(withPopularity,{genres,artists,interests,city,likedCategories});
+ res.json({success:true,data:ranked});
+}));
+module.exports=router;

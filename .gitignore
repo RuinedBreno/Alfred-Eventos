@@ -1,0 +1,27 @@
+**/node_modules/
+**/dist/
+**/.env
+**/.env.local
+.DS_Store
+*.log
+*.sqlite
+coverage/
+
+# Dependências e arquivos gerados
+node_modules/
+dist/
+coverage/
+.DS_Store
+
+# Configurações locais, backups e chaves
+.env
+.env.*
+!.env.example
+*.bak
+*.p8
+*.pem
+*.key
+
+# Cópias locais de versões anteriores
+/alfred-backup-*/
+/backup-perfil-musica-*/

@@ -1,0 +1,50 @@
+name: Alfred | Verificacao automatizada
+on:
+  push:
+  pull_request:
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: alfred-backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --no-audit --no-fund
+      - run: npm run check
+      - run: npm test
+      - run: npm run migrate && npm run seed && npm run ibge:import -- --offline
+      - run: node integration/flows.js
+    env:
+      DB_HOST: 127.0.0.1
+      DB_NAME: alfred_ci
+      DB_USER: root
+      DB_PASSWORD: ci_test_password
+      JWT_SECRET: integration-test-only-secret
+      ALFRED_TEST_DATABASE: alfred_ci
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: alfred_ci
+          MYSQL_ROOT_PASSWORD: ci_test_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s --health-timeout=5s --health-retries=10
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: alfred-frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build

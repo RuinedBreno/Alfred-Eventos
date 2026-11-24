@@ -1,0 +1,6 @@
+{
+  "name": "alfred-testes-de-navegador",
+  "private": true,
+  "scripts": { "test": "node navegador.cjs" },
+  "devDependencies": { "playwright": "^1.56.0" }
+}
